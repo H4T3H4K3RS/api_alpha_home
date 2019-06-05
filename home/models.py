@@ -1,48 +1,5 @@
-import datetime
-import pytz
 from django.contrib.auth.models import User
 from django.db import models
-from home.validators import validate_file_extension
-
-
-class SignUp(models.Model):
-    active = models.BooleanField(default=True)
-
-
-class Magazine(models.Model):
-    name = models.CharField(max_length=60)
-    version = models.IntegerField(default=1)
-    price = models.IntegerField(default=0)
-    image = models.FileField(default='')
-    components = models.CharField(max_length=100, default='')
-    other_img = models.FileField(null=True, default='')
-    description = models.CharField(default='', max_length=200)
-    license = models.BooleanField(default=True)
-
-
-class PasswordRecovery(models.Model):
-    """
-    Основная модель для восстановления пароля
-
-    :param active:  параметр активности
-    :param token_1: первый токен
-    :param token_2: второй токен
-    :param email: email
-    :param code: код
-    :param expires: время окончания работы токенов
-    :param confirm_token_1: первый токен
-    :param confirm_token_2: второй токен
-    """
-    active = models.BooleanField(default=True)
-    token_1 = models.CharField(default="", max_length=65)
-    token_2 = models.CharField(default="", max_length=65)
-    email = models.EmailField()
-    tries_left = models.IntegerField(default=3)
-    expires = models.DateTimeField(default=datetime.datetime.now(
-        pytz.utc) + datetime.timedelta(hours=24))
-    confirm_token_1 = models.CharField(default="", max_length=65)
-    confirm_token_2 = models.CharField(default="", max_length=65)
-    code = models.IntegerField(default=100000)
 
 
 class Home(models.Model):
@@ -189,19 +146,6 @@ class Display(models.Model):
     data2 = models.CharField(max_length=17)
 
 
-class Picture(models.Model):
-    """
-    Основная модель для загрузки фото
-
-    :param file: изображение
-    :param owner: пользователь загрузивший изображение
-    """
-    file = models.FileField(upload_to="pictures/",
-                            validators=[validate_file_extension])
-    owner = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, blank=True, null=False)
-
-
 class LicenseCode(models.Model):
     """
     Модель лицензионного ключа
@@ -211,17 +155,3 @@ class LicenseCode(models.Model):
     """
     code = models.CharField(default="", max_length=20)
     type = models.CharField(default="1", max_length=4)
-
-
-class Personalization(models.Model):
-    """
-    Основная модель для хранения персонализации
-
-    :param theme: тема
-    :param user: ForeignKey к модели :class:`django.contrib.auth.models.User`
-    :param room: комната, которая открывается в панели
-    """
-    room = models.ForeignKey(
-        to=Room, on_delete=models.CASCADE, blank=True, null=True)
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    theme = models.IntegerField(default=1)  # 0 - light; 1 - dark; 2-auto
