@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    {% load static %} {% load socialaccount %} {% load recaptcha2 %}
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'mdb-pro/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="{% static 'mdb-pro/css/mdb.min.css' %}" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% recaptcha_init %} <script>
+        window.onload = function() {
+            var $recaptcha = document.querySelector('#g-recaptcha-response');
+            if ($recaptcha) {
+                $recaptcha.setAttribute("required", "required");
+            }
+        };
+
+    </script>
+    <style>
+        #g-recaptcha-response {
+            display: block !important;
+            position: absolute;
+            margin: -78px 0 0 0 !important;
+            width: 302px !important;
+            height: 76px !important;
+            z-index: -999999;
+            opacity: 0;
+        }
+
+    </style>
+    <title>Тех.Поддержка</title>
+    <style>
+        .card-body {
+            background-color: #262626 !important;
+        }
+
+        .btn-outline-info {
+            border-color: #23d160 !important;
+            color: #1e9f50 !important;
+        }
+
+        body {
+            background-color: #262626 !important;
+        }
+
+    </style>
+    {% include "onesignal.html" %}
+</head>
+
+<body>
+    {% include 'metrics.html' %}
+    <div class="container">
+        <div class="row">
+            <div class="m-5 col-xs-5 px-5 py-lg-5">
+                <!-- Material form contact -->
+                <div class="card">
+                    <a class="position-absolute white-text" style="font-size: 50px;" onclick="history.go(-1);">&nbsp; &#8249;</a>
+                    <h5 class="card-header info-color white-text text-center py-4">
+                        <strong>Тех. Поддержка</strong>
+                    </h5>
+
+                    <!--Card content-->
+                    <div class="card-body px-lg-5 pt-0">
+
+                        <!-- Form -->
+                        <form class="text-center" action="{% url 'support' %}" method="post" style="color: #757575;">
+                            {% csrf_token %}
+                            <!-- Name -->
+                            <div class="md-form">
+                                {{ form.Name }}
+                                <label for="materialContactFormName">Имя</label>
+                            </div>
+
+                            <!-- E-mail -->
+                            <div class="md-form">
+                                {{ form.Email }}
+                                <label for="materialContactFormEmail">Email</label>
+                            </div>
+
+                            <!--Message-->
+                            <div class="md-form">
+                                {{ form.Question }}
+                                <label for="materialContactFormMessage">Вопрос</label>
+                            </div>
+                            {{ form.recaptcha }}
+
+                            <!-- Send button -->
+                            <button class="btn btn-outline-info btn-rounded btn-block z-depth-0 my-4 waves-effect" type="submit">Send</button>
+
+                        </form>
+                        <!-- Form -->
+
+                    </div>
+
+                </div>
+                <!-- Material form contact -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Material form login -->
+    <script type="text/javascript" src="{% static 'mdb-pro/js/jquery-3.3.1.min.js'%}"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="{% static 'mdb-pro/js/popper.min.js'%}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{% static 'mdb-pro/js/bootstrap.min.js'%}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{% static 'mdb-pro/js/mdb.min.js'%}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", set_email);
+
+        function set_email() {
+            let email = document.getElementById("materialContactFormEmail");
+            email.value = "{{ request.user.email }}";
+            let name = document.getElementById("materialContactFormName");
+            name.value = "{{ request.user.first_name }}" + " " + "{{ request.user.last_name }}";
+        }
+
+    </script>
+</body>
+
+</html>
