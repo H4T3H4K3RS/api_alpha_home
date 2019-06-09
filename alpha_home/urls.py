@@ -19,6 +19,6 @@ from home import views
 urlpatterns = [
     # Service for Arduino IoT:
     path('services/condition', views.condition, name="condition"),
-    path('services/relay', views.relay, name="relay"),
+    path('services/relay', views.lamp, name="relay"),
     path('services/door', views.door, name="door"),
 ]

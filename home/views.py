@@ -3,7 +3,7 @@
 """
 
 from django.shortcuts import render
-from home.models import Condition, Door, Relay, CodeCondition, CodeDoor, CodeRelay
+from home.models import Condition, Door, Lamp, Socket, Window, CodeCondition, CodeDoor, CodeLamp, CodeWindow, CodeSocket
 
 
 def condition(request):
@@ -86,7 +86,7 @@ def door(request):
         return render(request, "error404.html", )
 
 
-def relay(request):
+def lamp(request):
     """
     Получение данных от датчика реле
     :param request: объект c деталями запроса
@@ -96,16 +96,69 @@ def relay(request):
     """
     try:
         code = request.GET.get("code", "")
-        code_object = CodeRelay.objects.get(code=code)
-        relay_object = Relay.objects.filter(code=code_object)
-        if len(relay_object) == 0:
-            relay_object = Relay(room=code_object.room, switched=True, code=code_object)
-            relay_object.save()
+        code_object = CodeLamp.objects.get(code=code)
+        lamp_object = Lamp.objects.filter(code=code_object)
+        if len(lamp_object) == 0:
+            lamp_object = Lamp(room=code_object.room, switched=True, code=code_object)
+            lamp_object.save()
             context = {'code': 'no data'}
-        elif relay_object[0].switched:
+        elif lamp_object[0].switched:
             context = {'code': 4}  # True
         else:
             context = {'code': 7}  # False
         return render(request, "success_for_receiver.html", context)
-    except CodeRelay.DoesNotExist:
+    except CodeLamp.DoesNotExist:
+        return render(request, "error404.html", )
+
+
+def window(request):
+    """
+    Получение данных от датчика дверей
+    :param request: объект c деталями запроса
+    :type request: :class:`django.http.HttpRequest`
+    :return: при успешной записи данных новый токен
+    :rtype: :class:`django.http.HttpResponse`
+    """
+    opened = int(request.GET.get("opened", ""))
+    code = request.GET.get("code", "")
+    try:
+        code_object = CodeDoor.objects.get(code=code)
+        window_object = Door.objects.filter(code=code_object)
+        if len(window_object) == 0:
+            window_object = Window(opened=opened,
+                                   code=code_object,
+                                   room=code_object.room)
+        else:
+            window_object = window_object[0]
+            window_object.opened = opened
+        window_object.save()
+        context = {'code': "Success"}
+        code_object.save()
+        return render(request, "success.html", context)
+    except CodeDoor.DoesNotExist:
+        return render(request, "error404.html", )
+
+
+def socket(request):
+    """
+    Получение данных от датчика реле
+    :param request: объект c деталями запроса
+    :type request: :class:`django.http.HttpRequest`
+    :return: при успешной записи данных новый токен
+    :rtype: :class:`django.http.HttpResponse`
+    """
+    try:
+        code = request.GET.get("code", "")
+        code_object = CodeLamp.objects.get(code=code)
+        socket_object = Lamp.objects.filter(code=code_object)
+        if len(socket_object) == 0:
+            socket_object = Socket(room=code_object.room, switched=True, code=code_object)
+            socket_object.save()
+            context = {'code': 'no data'}
+        elif socket_object[0].switched:
+            context = {'code': 4}  # True
+        else:
+            context = {'code': 7}  # False
+        return render(request, "success_for_receiver.html", context)
+    except CodeLamp.DoesNotExist:
         return render(request, "error404.html", )
